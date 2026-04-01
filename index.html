@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Amake Solutions | Technology. Networks. Security.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════ */
+:root{
+  --c-navy:    #0B1930;
+  --c-deep:    #071220;
+  --c-corp:    #1E3A5F;
+  --c-mid:     #2A5298;
+  --c-cyan:    #00D4FF;
+  --c-cyan2:   #0099CC;
+  --c-gold:    #FFB800;
+  --c-white:   #F0F6FF;
+  --c-offwh:   #C8D8F0;
+  --c-muted:   #6B89B0;
+  --c-border:  rgba(0,212,255,.13);
+  --c-glass:   rgba(255,255,255,.04);
+  --c-glassh:  rgba(255,255,255,.07);
+  --r-sm:8px;  --r-md:14px; --r-lg:20px; --r-xl:28px;
+  --shadow:0 8px 32px rgba(0,0,0,.35);
+  --shadow-glow:0 0 40px rgba(0,212,255,.18);
+  --trans:.25s cubic-bezier(.4,0,.2,1);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--c-navy);
+  color:var(--c-white);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--c-deep)}
+::-webkit-scrollbar-thumb{background:var(--c-cyan2);border-radius:3px}
+
+/* selection */
+::selection{background:rgba(0,212,255,.25);color:#fff}
+
+/* ═══════════════════════════════════════════
+   GRID BG TEXTURE
+═══════════════════════════════════════════ */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ═══════════════════════════════════════════
+   NAVBAR
+═══════════════════════════════════════════ */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.9rem 5vw;
+  background:rgba(7,18,32,.88);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--c-border);
+  transition:background var(--trans);
+}
+.nav-brand{
+  display:flex;align-items:center;gap:.6rem;
+  text-decoration:none;cursor:pointer;
+}
+.nav-logo{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--c-cyan),var(--c-mid));
+  display:grid;place-items:center;
+  font-family:'Bebas Neue',sans-serif;font-size:1.3rem;
+  color:var(--c-navy);font-weight:900;flex-shrink:0;
+  box-shadow:0 0 16px rgba(0,212,255,.3);
+}
+.nav-wordmark{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.45rem;letter-spacing:2px;
+  color:var(--c-white);
+}
+.nav-wordmark span{color:var(--c-cyan)}
+.nav-links{display:flex;align-items:center;gap:.25rem}
+.nav-link{
+  background:none;border:none;cursor:pointer;
+  color:var(--c-muted);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:.85rem;font-weight:500;letter-spacing:.3px;
+  padding:.5rem .9rem;border-radius:var(--r-sm);
+  transition:color var(--trans),background var(--trans);
+}
+.nav-link:hover,.nav-link.active{color:var(--c-white);background:rgba(255,255,255,.06)}
+.nav-link.active{color:var(--c-cyan)}
+.nav-cta{
+  background:var(--c-cyan);color:var(--c-navy) !important;
+  font-weight:700 !important;padding:.5rem 1.2rem !important;
+  border-radius:var(--r-sm);transition:opacity var(--trans),transform var(--trans) !important;
+  font-size:.82rem !important;letter-spacing:.5px !important;
+}
+.nav-cta:hover{opacity:.87;transform:translateY(-1px);background:var(--c-cyan) !important}
+.nav-hamburger{
+  display:none;background:none;border:1px solid var(--c-border);
+  color:var(--c-white);padding:.45rem .7rem;border-radius:var(--r-sm);
+  cursor:pointer;font-size:1.1rem;
+}
+
+/* ═══════════════════════════════════════════
+   PAGES SYSTEM
+═══════════════════════════════════════════ */
+.page{display:none;min-height:100vh;padding-top:70px;position:relative;z-index:1}
+.page.active{display:block;animation:pageIn .4s ease both}
+@keyframes pageIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════════
+   SHARED UTILITIES
+═══════════════════════════════════════════ */
+.container{max-width:1200px;margin:0 auto;padding:0 5vw}
+.chip{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:rgba(0,212,255,.1);border:1px solid var(--c-border);
+  color:var(--c-cyan);font-size:.72rem;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:.32rem .9rem;border-radius:50px;
+}
+.chip-dot{width:5px;height:5px;border-radius:50%;background:var(--c-cyan);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.section-head{text-align:center;margin-bottom:3.5rem}
+.section-head .chip{margin-bottom:.9rem}
+.section-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2rem,4vw,3.2rem);
+  letter-spacing:2px;line-height:1.05;
+  color:var(--c-white);
+}
+.section-title span{color:var(--c-cyan)}
+.section-sub{
+  color:var(--c-muted);font-size:.97rem;line-height:1.7;
+  max-width:540px;margin:.9rem auto 0;font-weight:300;
+}
+
+.btn-primary{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--c-cyan);color:var(--c-navy);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:700;font-size:.9rem;letter-spacing:.3px;
+  padding:.85rem 2rem;border-radius:var(--r-sm);
+  border:none;cursor:pointer;text-decoration:none;
+  transition:transform var(--trans),box-shadow var(--trans);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,212,255,.3)}
+.btn-outline{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:transparent;color:var(--c-white);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:600;font-size:.9rem;
+  padding:.83rem 1.8rem;border-radius:var(--r-sm);
+  border:1.5px solid rgba(255,255,255,.2);cursor:pointer;text-decoration:none;
+  transition:border-color var(--trans),color var(--trans);
+}
+.btn-outline:hover{border-color:var(--c-cyan);color:var(--c-cyan)}
+.btn-gold{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--c-gold);color:#1a1000;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:700;font-size:.9rem;
+  padding:.85rem 2rem;border-radius:var(--r-sm);
+  border:none;cursor:pointer;text-decoration:none;
+  transition:transform var(--trans),box-shadow var(--trans);
+}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,184,0,.3)}
+
+.glass-card{
+  background:var(--c-glass);
+  border:1px solid var(--c-border);
+  border-radius:var(--r-lg);
+  backdrop-filter:blur(8px);
+  transition:transform var(--trans),border-color var(--trans),background var(--trans);
+}
+.glass-card:hover{
+  transform:translateY(-5px);
+  border-color:rgba(0,212,255,.3);
+  background:var(--c-glassh);
+}
+
+/* ═══════════════════════════════════════════
+   DIVIDER
+═══════════════════════════════════════════ */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--c-border),transparent);margin:0}
+
+/* ═══════════════════════════════════════════
+   ███ PAGE: HOME
+═══════════════════════════════════════════ */
+
+/* HERO */
+.hero{
+  min-height:calc(100vh - 70px);
+  display:flex;align-items:center;
+  padding:4rem 5vw 3rem;
+  position:relative;overflow:hidden;
+}
+.hero-orb1,.hero-orb2,.hero-orb3{position:absolute;pointer-events:none;border-radius:50%}
+.hero-orb1{
+  top:-160px;right:-120px;width:700px;height:700px;
+  background:radial-gradient(circle,rgba(0,212,255,.1) 0%,transparent 65%);
+}
+.hero-orb2{
+  bottom:-120px;left:-80px;width:500px;height:500px;
+  background:radial-gradient(circle,rgba(30,58,95,.5) 0%,transparent 60%);
+}
+.hero-orb3{
+  top:40%;left:40%;width:300px;height:300px;
+  background:radial-gradient(circle,rgba(255,184,0,.05) 0%,transparent 60%);
+}
+.hero-inner{
+  max-width:1200px;margin:0 auto;width:100%;
+  display:grid;grid-template-columns:1.1fr 1fr;
+  gap:4rem;align-items:center;position:relative;z-index:1;
+}
+.hero-eyebrow{display:flex;align-items:center;gap:.7rem;margin-bottom:1.4rem}
+.hero-eyebrow .chip{font-size:.7rem}
+.hero-eyebrow-line{height:1px;width:40px;background:linear-gradient(90deg,var(--c-cyan),transparent)}
+.hero-h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(3rem,6vw,5.2rem);
+  letter-spacing:2.5px;line-height:.97;
+  margin-bottom:1.5rem;
+}
+.hero-h1 .line-cyan{color:var(--c-cyan);display:block}
+.hero-h1 .line-outline{
+  display:block;
+  -webkit-text-stroke:2px rgba(255,255,255,.25);
+  color:transparent;
+}
+.hero-p{
+  color:var(--c-offwh);font-size:1.05rem;line-height:1.72;
+  max-width:460px;margin-bottom:2.4rem;font-weight:300;
+}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap}
+.hero-trust{
+  display:flex;align-items:center;gap:1.4rem;
+  margin-top:2.4rem;padding-top:2rem;
+  border-top:1px solid var(--c-border);
+}
+.trust-stat{}
+.trust-num{
+  font-family:'Bebas Neue',sans-serif;font-size:1.8rem;
+  letter-spacing:1px;color:var(--c-cyan);line-height:1;
+}
+.trust-label{font-size:.75rem;color:var(--c-muted);font-weight:400}
+.trust-divider{width:1px;height:36px;background:var(--c-border)}
+
+/* Hero Visual Panel */
+.hero-panel{
+  background:linear-gradient(145deg,rgba(30,58,95,.3),rgba(0,212,255,.06));
+  border:1px solid var(--c-border);border-radius:var(--r-xl);
+  padding:1.8rem;display:flex;flex-direction:column;gap:1rem;
+  box-shadow:var(--shadow);
+}
+.hp-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.hp-card{
+  background:var(--c-glass);border:1px solid var(--c-border);
+  border-radius:var(--r-md);padding:1.2rem;
+  cursor:default;transition:transform var(--trans),border-color var(--trans);
+}
+.hp-card:hover{transform:translateY(-3px);border-color:rgba(0,212,255,.35)}
+.hp-card.wide{grid-column:span 2;display:flex;align-items:center;gap:1rem}
+.hp-icon{font-size:1.6rem;margin-bottom:.6rem}
+.hp-card.wide .hp-icon{font-size:2rem;margin:0;flex-shrink:0}
+.hp-label{font-weight:700;font-size:.88rem;margin-bottom:.25rem}
+.hp-desc{font-size:.77rem;color:var(--c-muted);line-height:1.5}
+.hp-badge{
+  position:absolute;top:.6rem;right:.6rem;
+  background:rgba(255,184,0,.15);color:var(--c-gold);
+  font-size:.65rem;font-weight:700;letter-spacing:.5px;
+  padding:.15rem .5rem;border-radius:50px;border:1px solid rgba(255,184,0,.25);
+}
+.hp-card{position:relative}
+
+/* MARQUEE STRIP */
+.marquee-strip{
+  background:linear-gradient(90deg,var(--c-corp),var(--c-mid),var(--c-corp));
+  border-top:1px solid var(--c-border);border-bottom:1px solid var(--c-border);
+  padding:.75rem 0;overflow:hidden;
+}
+.marquee-track{
+  display:flex;gap:3rem;
+  animation:marquee 22s linear infinite;
+  white-space:nowrap;width:max-content;
+}
+.marquee-item{
+  display:flex;align-items:center;gap:.6rem;
+  font-size:.78rem;font-weight:600;letter-spacing:1px;
+  text-transform:uppercase;color:rgba(240,246,255,.7);
+  flex-shrink:0;
+}
+.marquee-item span{color:var(--c-cyan);font-size:.9rem}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* HOME SERVICES PREVIEW */
+.home-services{padding:6rem 5vw}
+.services-grid-3{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;
+  max-width:1200px;margin:0 auto;
+}
+.svc-card{
+  background:var(--c-glass);border:1px solid var(--c-border);
+  border-radius:var(--r-lg);padding:2rem 1.7rem;
+  position:relative;overflow:hidden;
+  transition:transform var(--trans),border-color var(--trans),background var(--trans);
+}
+.svc-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:2px;background:linear-gradient(90deg,var(--c-cyan),transparent);
+  opacity:0;transition:opacity var(--trans);
+}
+.svc-card:hover{transform:translateY(-6px);border-color:rgba(0,212,255,.3);background:var(--c-glassh)}
+.svc-card:hover::after{opacity:1}
+.svc-num{
+  font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:1px;
+  color:rgba(0,212,255,.12);position:absolute;top:.6rem;right:1rem;line-height:1;
+}
+.svc-icon-box{
+  width:50px;height:50px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(30,58,95,.5));
+  border:1px solid var(--c-border);
+  display:grid;place-items:center;font-size:1.4rem;
+  margin-bottom:1.2rem;
+}
+.svc-title{font-weight:700;font-size:1rem;margin-bottom:.5rem}
+.svc-desc{font-size:.85rem;color:var(--c-muted);line-height:1.65}
+.svc-more{
+  display:inline-flex;align-items:center;gap:.35rem;
+  margin-top:1rem;font-size:.8rem;font-weight:600;
+  color:var(--c-cyan);cursor:pointer;border:none;background:none;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  transition:gap var(--trans);
+}
+.svc-more:hover{gap:.6rem}
+
+/* HOME CTA BAND */
+.cta-band{
+  padding:5rem 5vw;
+  background:linear-gradient(135deg,rgba(30,58,95,.4),rgba(0,212,255,.08));
+  border-top:1px solid var(--c-border);border-bottom:1px solid var(--c-border);
+}
+.cta-band-inner{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:2rem;flex-wrap:wrap;
+}
+.cta-band-text h2{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(1.8rem,3vw,2.8rem);letter-spacing:2px;
+  margin-bottom:.5rem;
+}
+.cta-band-text h2 span{color:var(--c-gold)}
+.cta-band-text p{color:var(--c-muted);font-size:.95rem;font-weight:300}
+.cta-band-actions{display:flex;gap:1rem;flex-wrap:wrap}
+
+/* TESTIMONIALS */
+.testimonials{padding:6rem 5vw}
+.testi-grid{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;
+}
+.testi-card{
+  background:var(--c-glass);border:1px solid var(--c-border);
+  border-radius:var(--r-lg);padding:2rem;
+}
+.testi-stars{color:var(--c-gold);font-size:1rem;margin-bottom:1rem;letter-spacing:2px}
+.testi-quote{
+  font-size:.9rem;color:var(--c-offwh);line-height:1.7;
+  font-weight:300;font-style:italic;margin-bottom:1.4rem;
+}
+.testi-author{display:flex;align-items:center;gap:.8rem}
+.testi-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--c-cyan),var(--c-mid));
+  display:grid;place-items:center;
+  font-family:'Bebas Neue',sans-serif;font-size:1.1rem;
+  color:var(--c-navy);flex-shrink:0;
+}
+.testi-name{font-weight:700;font-size:.88rem}
+.testi-role{font-size:.77rem;color:var(--c-muted)}
+
+/* ═══════════════════════════════════════════
+   ███ PAGE: SERVICES
+═══════════════════════════════════════════ */
+.services-page{padding:5rem 5vw}
+.services-hero{
+  background:linear-gradient(135deg,rgba(30,58,95,.35),rgba(0,212,255,.06));
+  border:1px solid var(--c-border);border-radius:var(--r-xl);
+  padding:4rem 3rem;margin-bottom:4rem;text-align:center;
+  position:relative;overflow:hidden;
+}
+.services-hero::before{
+  content:'';position:absolute;top:-50%;left:50%;
+  transform:translateX(-50%);
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(0,212,255,.08) 0%,transparent 60%);
+  pointer-events:none;
+}
+.services-hero h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.5rem,5vw,4.5rem);letter-spacing:3px;
+  margin-bottom:.8rem;position:relative;z-index:1;
+}
+.services-hero h1 span{color:var(--c-cyan)}
+.services-hero p{
+  color:var(--c-muted);max-width:580px;margin:0 auto;
+  font-size:1rem;line-height:1.7;font-weight:300;position:relative;z-index:1;
+}
+.svc-full-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:2rem;
+  max-width:1200px;margin:0 auto;
+}
+.svc-full-card{
+  background:var(--c-glass);border:1px solid var(--c-border);
+  border-radius:var(--r-xl);padding:2.5rem;
+  transition:transform var(--trans),border-color var(--trans),background var(--trans);
+  position:relative;overflow:hidden;
+}
+.svc-full-card:hover{
+  transform:translateY(-5px);border-color:rgba(0,212,255,.3);
+  background:var(--c-glassh);
+}
+.sfc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem}
+.sfc-icon{
+  width:60px;height:60px;border-radius:var(--r-md);
+  background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(30,58,95,.5));
+  border:1px solid var(--c-border);
+  display:grid;place-items:center;font-size:1.8rem;
+}
+.sfc-tag{
+  background:rgba(0,212,255,.1);border:1px solid var(--c-border);
+  color:var(--c-cyan);font-size:.7rem;font-weight:700;
+  padding:.25rem .7rem;border-radius:50px;letter-spacing:.5px;
+  align-self:flex-start;
+}
+.sfc-tag.gold{
+  background:rgba(255,184,0,.1);border-color:rgba(255,184,0,.2);color:var(--c-gold);
+}
+.sfc-title{
+  font-family:'Bebas Neue',sans-serif;font-size:1.5rem;
+  letter-spacing:1.5px;margin-bottom:.6rem;
+}
+.sfc-desc{color:var(--c-muted);font-size:.9rem;line-height:1.68;font-weight:300;margin-bottom:1.5rem}
+.sfc-list{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.sfc-list li{
+  display:flex;align-items:center;gap:.6rem;
+  font-size:.85rem;color:var(--c-offwh);
+}
+.sfc-list li::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--c-cyan);flex-shrink:0;
+}
+.sfc-bottom{
+  margin-top:1.8rem;padding-top:1.4rem;
+  border-top:1px solid var(--c-border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.sfc-note{font-size:.78rem;color:var(--c-muted)}
+
+/* Process section on services page */
+.process-section{padding:5rem 5vw;background:linear-gradient(180deg,transparent,rgba(30,58,95,.15),transparent)}
+.process-timeline{
+  max-width:1000px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
+  position:relative;
+}
+.process-timeline::after{
+  content:'';position:absolute;
+  top:32px;left:12%;right:12%;height:1px;
+  background:linear-gradient(90deg,var(--c-cyan),rgba(0,212,255,.15));
+}
+.pt-step{text-align:center;position:relative;z-index:1}
+.pt-circle{
+  width:64px;height:64px;border-radius:50%;
+  background:var(--c-navy);border:2px solid var(--c-cyan);
+  display:grid;place-items:center;
+  margin:0 auto 1.1rem;
+  font-family:'Bebas Neue',sans-serif;font-size:1.4rem;
+  color:var(--c-cyan);letter-spacing:1px;
+  box-shadow:0 0 20px rgba(0,212,255,.15);
+}
+.pt-title{font-weight:700;font-size:.9rem;margin-bottom:.4rem}
+.pt-desc{font-size:.8rem;color:var(--c-muted);line-height:1.5}
+
+/* ═══════════════════════════════════════════
+   ███ PAGE: ABOUT
+═══════════════════════════════════════════ */
+.about-page{padding:5rem 5vw}
+.about-hero{
+  max-width:1200px;margin:0 auto 5rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;
+}
+.about-hero-text .chip{margin-bottom:1rem}
+.about-hero-text h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.8rem,5vw,4.5rem);letter-spacing:2px;line-height:.97;
+  margin-bottom:1.4rem;
+}
+.about-hero-text h1 span{color:var(--c-cyan)}
+.about-hero-text p{
+  color:var(--c-muted);font-size:.98rem;line-height:1.75;
+  font-weight:300;margin-bottom:1.2rem;
+}
+.about-visual{display:flex;flex-direction:column;gap:1rem}
+.av-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.av-card{
+  background:var(--c-glass);border:1px solid var(--c-border);
+  border-radius:var(--r-lg);padding:1.5rem;
+  transition:border-color var(--trans);
+}
+.av-card:hover{border-color:rgba(0,212,255,.35)}
+.av-icon{font-size:1.8rem;margin-bottom:.7rem}
+.av-h{font-weight:700;font-size:.9rem;margin-bottom:.3rem}
+.av-p{font-size:.8rem;color:var(--c-muted);line-height:1.5}
+
+/* Values */
+.values-section{padding:4rem 5vw;max-width:1200px;margin:0 auto}
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.val-card{
+  background:var(--c-glass);border:1px solid var(--c-border);
+  border-radius:var(--r-lg);padding:2rem;
+  transition:transform var(--trans),border-color var(--trans);
+  text-align:center;
+}
+.val-card:hover{transform:translateY(-5px);border-color:rgba(0,212,255,.3)}
+.val-emoji{font-size:2.4rem;margin-bottom:1rem}
+.val-title{
+  font-family:'Bebas Neue',sans-serif;font-size:1.3rem;
+  letter-spacing:1.5px;margin-bottom:.6rem;
+}
+.val-desc{font-size:.87rem;color:var(--c-muted);line-height:1.65}
+
+/* Culture band */
+.culture-band{
+  margin:4rem 5vw;max-width:1200px;margin-left:auto;margin-right:auto;
+  background:linear-gradient(135deg,rgba(30,58,95,.4),rgba(0,212,255,.07));
+  border:1px solid var(--c-border);border-radius:var(--r-xl);
+  padding:3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+}
+.cb-text h2{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,3vw,2.6rem);
+  letter-spacing:2px;margin-bottom:1rem;
+}
+.cb-text h2 span{color:var(--c-gold)}
+.cb-text p{color:var(--c-muted);font-size:.93rem;line-height:1.72;font-weight:300}
+.cb-list{list-style:none;display:flex;flex-direction:column;gap:.85rem}
+.cb-list li{
+  display:flex;align-items:flex-start;gap:.8rem;
+  font-size:.9rem;color:var(--c-offwh);
+}
+.cb-check{
+  width:24px;height:24px;border-radius:50%;
+  background:rgba(0,212,255,.12);border:1px solid var(--c-border);
+  display:grid;place-items:center;color:var(--c-cyan);
+  font-size:.7rem;flex-shrink:0;margin-top:.1rem;
+}
+
+/* ═══════════════════════════════════════════
+   ███ PAGE: CYBERCAFE
+═══════════════════════════════════════════ */
+.cafe-page{padding:5rem 5vw}
+.cafe-hero{
+  text-align:center;max-width:800px;margin:0 auto 4rem;
+}
+.cafe-hero h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.8rem,5vw,4.5rem);letter-spacing:3px;
+  margin-bottom:.8rem;
+}
+.cafe-hero h1 span{color:var(--c-gold)}
+.cafe-hero p{color:var(--c-muted);font-size:1rem;line-height:1.7;font-weight:300}
+.cafe-services-grid{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;
+  margin-bottom:4rem;
+}
+.cafe-svc{
+  background:linear-gradient(145deg,rgba(0,212,255,.06),rgba(30,58,95,.2));
+  border:1px solid var(--c-border);border-radius:var(--r-lg);
+  padding:1.8rem 1.4rem;text-align:center;
+  transition:transform var(--trans),box-shadow var(--trans),border-color var(--trans);
+}
+.cafe-svc:hover{
+  transform:translateY(-5px);
+  box-shadow:0 20px 50px rgba(0,0,0,.3);
+  border-color:rgba(0,212,255,.3);
+}
+.cafe-svc-emoji{font-size:2.4rem;margin-bottom:.9rem}
+.cafe-svc-name{font-weight:700;font-size:.95rem;margin-bottom:.4rem;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;font-size:1.05rem}
+.cafe-svc-info{font-size:.81rem;color:var(--c-muted);line-height:1.55}
+.cafe-svc-price{
+  margin-top:.8rem;font-size:.78rem;font-weight:700;
+  color:var(--c-gold);letter-spacing:.5px;
+}
+/* Cafe ambiance */
+.cafe-ambiance{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:3rem;
+  align-items:center;
+  background:linear-gradient(135deg,rgba(30,58,95,.3),rgba(255,184,0,.04));
+  border:1px solid var(--c-border);border-radius:var(--r-xl);
+  padding:3rem;
+}
+.ca-text .chip{margin-bottom:1rem}
+.ca-text h2{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(1.8rem,3vw,2.6rem);letter-spacing:2px;margin-bottom:1rem;
+}
+.ca-text h2 span{color:var(--c-gold)}
+.ca-text p{color:var(--c-muted);font-size:.93rem;line-height:1.72;font-weight:300;margin-bottom:1.5rem}
+.ca-features{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.ca-feat{
+  display:flex;align-items:center;gap:.6rem;
+  font-size:.85rem;color:var(--c-offwh);
+}
+.ca-feat-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.2);
+  display:grid;place-items:center;font-size:.9rem;flex-shrink:0;
+}
+.ca-hours{
+  background:var(--c-glass);border:1px solid var(--c-border);
+  border-radius:var(--r-lg);padding:1.8rem;
+}
+.ca-hours h3{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;
+  font-size:1.2rem;margin-bottom:1.2rem;color:var(--c-gold);
+}
+.ca-hour-row{
+  display:flex;justify-content:space-between;
+  padding:.6rem 0;border-bottom:1px solid var(--c-border);
+  font-size:.87rem;
+}
+.ca-hour-row:last-child{border-bottom:none}
+.ca-hour-row .day{color:var(--c-muted)}
+.ca-hour-row .time{font-weight:600;color:var(--c-white)}
+.ca-hour-row .time.closed{color:rgba(255,255,255,.3)}
+
+/* ═══════════════════════════════════════════
+   ███ PAGE: CONTACT
+═══════════════════════════════════════════ */
+.contact-page{padding:5rem 5vw}
+.contact-hero-text{text-align:center;margin-bottom:4rem}
+.contact-hero-text h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.5rem,5vw,4rem);letter-spacing:3px;margin-bottom:.7rem;
+}
+.contact-hero-text h1 span{color:var(--c-cyan)}
+.contact-hero-text p{color:var(--c-muted);font-size:1rem;font-weight:300}
+.contact-grid{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1.4fr;gap:3.5rem;
+}
+.contact-info-col{}
+.contact-info-col h3{
+  font-family:'Bebas Neue',sans-serif;font-size:1.6rem;
+  letter-spacing:1.5px;margin-bottom:1rem;
+}
+.contact-info-col>p{
+  color:var(--c-muted);font-size:.93rem;line-height:1.72;
+  font-weight:300;margin-bottom:2rem;
+}
+.cinfo{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:1.3rem}
+.cinfo-icon{
+  width:44px;height:44px;border-radius:10px;
+  background:rgba(0,212,255,.1);border:1px solid var(--c-border);
+  display:grid;place-items:center;font-size:1.1rem;flex-shrink:0;
+}
+.cinfo-label{font-size:.75rem;color:var(--c-muted);margin-bottom:.15rem;font-weight:400}
+.cinfo-val{font-size:.9rem;font-weight:600;color:var(--c-white)}
+.contact-socials{
+  display:flex;gap:.7rem;margin-top:2rem;
+  padding-top:1.5rem;border-top:1px solid var(--c-border);
+}
+.cs-btn{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--c-glass);border:1px solid var(--c-border);
+  display:grid;place-items:center;font-size:.95rem;
+  cursor:pointer;text-decoration:none;color:var(--c-muted);
+  transition:background var(--trans),border-color var(--trans),color var(--trans);
+}
+.cs-btn:hover{background:rgba(0,212,255,.1);border-color:var(--c-cyan);color:var(--c-cyan)}
+.contact-form-card{
+  background:var(--c-glass);border:1px solid var(--c-border);
+  border-radius:var(--r-xl);padding:2.5rem;
+  backdrop-filter:blur(8px);
+}
+.cf-title{
+  font-family:'Bebas Neue',sans-serif;font-size:1.4rem;
+  letter-spacing:1.5px;margin-bottom:1.8rem;
+}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.cf-group{margin-bottom:1.2rem}
+.cf-group label{
+  display:block;font-size:.78rem;font-weight:600;
+  color:var(--c-muted);margin-bottom:.45rem;letter-spacing:.3px;text-transform:uppercase;
+}
+.cf-group input,.cf-group select,.cf-group textarea{
+  width:100%;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:var(--r-sm);
+  padding:.78rem 1rem;color:var(--c-white);
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;
+  outline:none;transition:border-color var(--trans),background var(--trans);
+}
+.cf-group input:focus,.cf-group select:focus,.cf-group textarea:focus{
+  border-color:var(--c-cyan);background:rgba(0,212,255,.05);
+}
+.cf-group select option{background:var(--c-deep);color:var(--c-white)}
+.cf-group textarea{resize:vertical;min-height:120px}
+.cf-submit{
+  width:100%;background:var(--c-cyan);color:var(--c-navy);
+  font-family:'Bebas Neue',sans-serif;font-size:1.05rem;
+  letter-spacing:2px;padding:1rem;border-radius:var(--r-sm);
+  border:none;cursor:pointer;margin-top:.4rem;
+  transition:opacity var(--trans),transform var(--trans);
+}
+.cf-submit:hover{opacity:.88;transform:translateY(-2px)}
+
+/* Map placeholder */
+.map-section{padding:3rem 5vw 5rem;max-width:1200px;margin:0 auto}
+.map-box{
+  background:linear-gradient(135deg,rgba(30,58,95,.3),rgba(0,212,255,.04));
+  border:1px solid var(--c-border);border-radius:var(--r-xl);
+  height:280px;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:1rem;
+  position:relative;overflow:hidden;
+}
+.map-box::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,.04) 1px,transparent 1px);
+  background-size:30px 30px;
+}
+.map-pin{font-size:3rem;position:relative;z-index:1}
+.map-text{font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1.1rem;color:var(--c-muted);position:relative;z-index:1}
+
+/* ═══════════════════════════════════════════
+   STATS TICKER
+═══════════════════════════════════════════ */
+.stats-ticker{
+  padding:3rem 5vw;
+  background:linear-gradient(90deg,var(--c-corp),var(--c-mid),var(--c-corp));
+  border-top:1px solid var(--c-border);
+  border-bottom:1px solid var(--c-border);
+}
+.stats-row{
+  max-width:1200px;margin:0 auto;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:2rem;
+}
+.stat-box{display:flex;flex-direction:column;align-items:center;flex:1;min-width:120px}
+.stat-val{
+  font-family:'Bebas Neue',sans-serif;font-size:2.5rem;
+  letter-spacing:1px;color:var(--c-cyan);line-height:1;
+}
+.stat-lbl{font-size:.78rem;color:var(--c-offwh);font-weight:400;text-align:center;margin-top:.25rem}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  background:var(--c-deep);
+  border-top:1px solid var(--c-border);
+  padding:4rem 5vw 2rem;
+  position:relative;z-index:1;
+}
+.footer-top{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3.5rem;
+  padding-bottom:3rem;
+  border-bottom:1px solid var(--c-border);
+  margin-bottom:2rem;
+}
+.fb-logo{margin-bottom:1rem}
+.fb-desc{color:var(--c-muted);font-size:.87rem;line-height:1.68;max-width:270px;margin-bottom:1.4rem}
+.fb-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.2);
+  color:var(--c-gold);font-size:.72rem;font-weight:600;
+  padding:.3rem .8rem;border-radius:50px;letter-spacing:.5px;
+}
+.fc-head{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;
+  font-size:.95rem;color:var(--c-white);margin-bottom:1.1rem;
+  text-transform:uppercase;
+}
+.fc-links{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.fc-links button{
+  background:none;border:none;color:var(--c-muted);
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;
+  cursor:pointer;text-align:left;padding:0;
+  transition:color var(--trans);
+}
+.fc-links button:hover{color:var(--c-cyan)}
+.footer-bottom{
+  max-width:1200px;margin:0 auto;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:.5rem;
+  font-size:.8rem;color:var(--c-muted);
+}
+.footer-bottom span{color:var(--c-cyan)}
+.footer-accent{color:var(--c-gold)}
+
+/* ═══════════════════════════════════════════
+   MOBILE NAV MENU
+═══════════════════════════════════════════ */
+#mobile-menu{
+  display:none;position:fixed;top:60px;left:0;right:0;z-index:998;
+  background:rgba(7,18,32,.97);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--c-border);
+  padding:1.5rem 5vw;
+  flex-direction:column;gap:1rem;
+}
+#mobile-menu.open{display:flex}
+.mob-link{
+  background:none;border:none;cursor:pointer;
+  color:var(--c-muted);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:1rem;font-weight:500;text-align:left;
+  padding:.6rem 0;border-bottom:1px solid var(--c-border);
+  transition:color var(--trans);width:100%;
+}
+.mob-link:hover,.mob-link.active{color:var(--c-cyan)}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:1024px){
+  .hero-inner{grid-template-columns:1fr;gap:2rem}
+  .hero-panel{display:none}
+  .services-grid-3{grid-template-columns:1fr 1fr}
+  .svc-full-grid{grid-template-columns:1fr}
+  .values-grid{grid-template-columns:1fr 1fr}
+  .footer-top{grid-template-columns:1fr 1fr;gap:2rem}
+  .testi-grid{grid-template-columns:1fr 1fr}
+  .cafe-services-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .nav-hamburger{display:block}
+  .hero{padding:3rem 5vw 2.5rem}
+  .hero-trust{flex-wrap:wrap;gap:1rem}
+  .services-grid-3{grid-template-columns:1fr}
+  .process-timeline{grid-template-columns:1fr 1fr}
+  .process-timeline::after{display:none}
+  .about-hero{grid-template-columns:1fr;gap:2rem}
+  .av-row{grid-template-columns:1fr 1fr}
+  .values-grid{grid-template-columns:1fr}
+  .culture-band{grid-template-columns:1fr;gap:2rem}
+  .cafe-services-grid{grid-template-columns:repeat(2,1fr)}
+  .cafe-ambiance{grid-template-columns:1fr;gap:2rem}
+  .ca-features{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:1fr;gap:2rem}
+  .cf-row{grid-template-columns:1fr}
+  .cta-band-inner{flex-direction:column;text-align:center}
+  .footer-top{grid-template-columns:1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .stats-row{justify-content:center}
+  .footer-bottom{justify-content:center;text-align:center}
+  .about-visual{display:none}
+}
+@media(max-width:480px){
+  .hero-h1{font-size:3rem}
+  .cafe-services-grid{grid-template-columns:1fr 1fr}
+  .av-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav id="navbar">
+  <div class="nav-brand" onclick="navTo('home')">
+    <div class="nav-logo">AS</div>
+    <div class="nav-wordmark">Amake <span>Solutions</span></div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link active" data-page="home" onclick="navTo('home')">Home</button>
+    <button class="nav-link" data-page="services" onclick="navTo('services')">Services</button>
+    <button class="nav-link" data-page="about" onclick="navTo('about')">About</button>
+    <button class="nav-link" data-page="cafe" onclick="navTo('cafe')">Cybercafé</button>
+    <button class="nav-link nav-cta" data-page="contact" onclick="navTo('contact')">Contact Us</button>
+  </div>
+  <button class="nav-hamburger" onclick="toggleMobile()">☰</button>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu">
+  <button class="mob-link active" data-page="home" onclick="navTo('home');closeMobile()">Home</button>
+  <button class="mob-link" data-page="services" onclick="navTo('services');closeMobile()">Services</button>
+  <button class="mob-link" data-page="about" onclick="navTo('about');closeMobile()">About</button>
+  <button class="mob-link" data-page="cafe" onclick="navTo('cafe');closeMobile()">Cybercafé</button>
+  <button class="mob-link" data-page="contact" onclick="navTo('contact');closeMobile()">Contact Us</button>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     PAGE: HOME
+════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-orb1"></div><div class="hero-orb2"></div><div class="hero-orb3"></div>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <div class="chip"><span class="chip-dot"></span>Startup in Tech Excellence</div>
+          <div class="hero-eyebrow-line"></div>
+        </div>
+        <h1 class="hero-h1">
+          <span>Your Complete</span>
+          <span class="line-cyan">Tech Partner</span>
+          <span class="line-outline">In One Place</span>
+        </h1>
+        <p class="hero-p">Amake Solutions delivers expert repairs, cutting-edge cybersecurity, network infrastructure, web development, and comprehensive cybercafé services — all under one trusted roof.</p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="navTo('services')">Our Services →</button>
+          <button class="btn-outline" onclick="navTo('contact')">Get a Free Quote</button>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-stat"><div class="trust-num">500+</div><div class="trust-label">Devices Repaired</div></div>
+          <div class="trust-divider"></div>
+          <div class="trust-stat"><div class="trust-num">7</div><div class="trust-label">Core Services</div></div>
+          <div class="trust-divider"></div>
+          <div class="trust-stat"><div class="trust-num">24h</div><div class="trust-label">Turnaround</div></div>
+          <div class="trust-divider"></div>
+          <div class="trust-stat"><div class="trust-num">98%</div><div class="trust-label">Satisfaction</div></div>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="hp-card wide">
+          <div class="hp-icon">🛡️</div>
+          <div>
+            <div class="hp-label">Cyber Security Services</div>
+            <div class="hp-desc">Enterprise-grade protection, threat monitoring, and vulnerability assessments for your business.</div>
+          </div>
+        </div>
+        <div class="hp-row">
+          <div class="hp-card"><span class="hp-badge">Popular</span><div class="hp-icon">🔧</div><div class="hp-label">Device Repairs</div><div class="hp-desc">Phones &amp; computers fixed fast, right the first time.</div></div>
+          <div class="hp-card"><div class="hp-icon">📡</div><div class="hp-label">Networks</div><div class="hp-desc">Full LAN/WAN setup &amp; maintenance.</div></div>
+        </div>
+        <div class="hp-row">
+          <div class="hp-card"><div class="hp-icon">🌐</div><div class="hp-label">Web Dev</div><div class="hp-desc">Modern responsive websites.</div></div>
+          <div class="hp-card"><div class="hp-icon">🖨️</div><div class="hp-label">Cybercafé</div><div class="hp-desc">Print, copy, scan &amp; more.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <div class="marquee-item"><span>⚡</span> Device Repairs</div>
+      <div class="marquee-item"><span>📡</span> Network Installations</div>
+      <div class="marquee-item"><span>🛡️</span> Cyber Security</div>
+      <div class="marquee-item"><span>🌐</span> Web Development</div>
+      <div class="marquee-item"><span>🖨️</span> Print &amp; Copy</div>
+      <div class="marquee-item"><span>⚙️</span> Upgrades &amp; Maintenance</div>
+      <div class="marquee-item"><span>⚡</span> Electrical Services</div>
+      <div class="marquee-item"><span>💻</span> Phone Accessories</div>
+      <!-- duplicate for seamless loop -->
+      <div class="marquee-item"><span>⚡</span> Device Repairs</div>
+      <div class="marquee-item"><span>📡</span> Network Installations</div>
+      <div class="marquee-item"><span>🛡️</span> Cyber Security</div>
+      <div class="marquee-item"><span>🌐</span> Web Development</div>
+      <div class="marquee-item"><span>🖨️</span> Print &amp; Copy</div>
+      <div class="marquee-item"><span>⚙️</span> Upgrades &amp; Maintenance</div>
+      <div class="marquee-item"><span>⚡</span> Electrical Services</div>
+      <div class="marquee-item"><span>💻</span> Phone Accessories</div>
+    </div>
+  </div>
+
+  <!-- SERVICES PREVIEW -->
+  <section class="home-services">
+    <div class="container">
+      <div class="section-head">
+        <div class="chip">What We Do</div>
+        <h2 class="section-title">Comprehensive <span>Tech Services</span></h2>
+        <p class="section-sub">From the device in your pocket to the network powering your office — we handle it all professionally.</p>
+      </div>
+      <div class="services-grid-3">
+        <div class="svc-card"><div class="svc-num">01</div><div class="svc-icon-box">💻</div><div class="svc-title">Accessories &amp; Hardware</div><p class="svc-desc">Quality computer and phone accessories — cables, chargers, peripherals, cases and more from leading brands.</p><button class="svc-more" onclick="navTo('services')">Learn More →</button></div>
+        <div class="svc-card"><div class="svc-num">02</div><div class="svc-icon-box">🔧</div><div class="svc-title">Repairs, Upgrades &amp; Maintenance</div><p class="svc-desc">Expert diagnosis and repair for computers and phones. Screen replacements, RAM upgrades, virus removal and preventive care.</p><button class="svc-more" onclick="navTo('services')">Learn More →</button></div>
+        <div class="svc-card"><div class="svc-num">03</div><div class="svc-icon-box">⚡</div><div class="svc-title">Electrical Services</div><p class="svc-desc">Safe, professional electrical installations and maintenance for homes and offices. UPS, surge protection, and fault finding.</p><button class="svc-more" onclick="navTo('services')">Learn More →</button></div>
+        <div class="svc-card"><div class="svc-num">04</div><div class="svc-icon-box">📡</div><div class="svc-title">Network Installation</div><p class="svc-desc">End-to-end LAN, WAN, and Wi-Fi solutions. We plan, install, configure and maintain networks that grow with your business.</p><button class="svc-more" onclick="navTo('services')">Learn More →</button></div>
+        <div class="svc-card"><div class="svc-num">05</div><div class="svc-icon-box">🛡️</div><div class="svc-title">Cyber Security</div><p class="svc-desc">Protect your digital assets. Vulnerability assessments, firewall setup, data backup, and security awareness training.</p><button class="svc-more" onclick="navTo('services')">Learn More →</button></div>
+        <div class="svc-card"><div class="svc-num">06</div><div class="svc-icon-box">🌐</div><div class="svc-title">Web Development</div><p class="svc-desc">Beautiful, functional websites and web apps built to convert. Business sites, e-commerce, portfolios, and SEO setup.</p><button class="svc-more" onclick="navTo('services')">Learn More →</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <div class="cta-band">
+    <div class="cta-band-inner">
+      <div class="cta-band-text">
+        <h2>Ready to Transform <span>Your Tech?</span></h2>
+        <p>From a quick repair to a full network build — we've got you covered. Reach out for a free consultation.</p>
+      </div>
+      <div class="cta-band-actions">
+        <button class="btn-primary" onclick="navTo('contact')">📞 Get a Free Quote</button>
+        <button class="btn-outline" onclick="navTo('cafe')">Explore Cybercafé</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="section-head">
+        <div class="chip">Client Voices</div>
+        <h2 class="section-title">What Our <span>Clients Say</span></h2>
+        <p class="section-sub">Real results. Real people. Real satisfaction.</p>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-quote">"Amake Solutions fixed my laptop the same day — fast, affordable, and professional. I won't go anywhere else for my tech needs."</p>
+          <div class="testi-author"><div class="testi-avatar">TM</div><div><div class="testi-name">Themba Mokoena</div><div class="testi-role">Small Business Owner</div></div></div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-quote">"They set up our entire office network from scratch, including CCTV. Incredibly professional and the pricing was very reasonable."</p>
+          <div class="testi-author"><div class="testi-avatar">NP</div><div><div class="testi-name">Nomsa Patel</div><div class="testi-role">Office Manager</div></div></div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-quote">"Our new website is exactly what we envisioned. The team was responsive, creative, and delivered on time. Highly recommended!"</p>
+          <div class="testi-author"><div class="testi-avatar">SN</div><div><div class="testi-name">Sipho Ndlovu</div><div class="testi-role">Entrepreneur</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page-home -->
+
+
+<!-- ════════════════════════════════════════════
+     PAGE: SERVICES
+════════════════════════════════════════════ -->
+<div class="page" id="page-services">
+  <div class="services-page">
+    <div class="container">
+      <div class="services-hero">
+        <div class="chip" style="margin-bottom:1rem">Our Services</div>
+        <h1>Everything Tech, <span>Under One Roof</span></h1>
+        <p>Amake Solutions is your all-in-one technology partner. From fixing your phone to securing your enterprise — we bring certified expertise and genuine care to every job.</p>
+      </div>
+
+      <div class="svc-full-grid">
+
+        <!-- Accessories -->
+        <div class="svc-full-card">
+          <div class="sfc-top"><div class="sfc-icon">💻</div><div class="sfc-tag">In Store</div></div>
+          <div class="sfc-title">Computer &amp; Phone Accessories</div>
+          <p class="sfc-desc">Stock your workspace with the right tools. We carry a curated selection of quality accessories for computers and mobile phones, sourced from trusted suppliers at competitive prices.</p>
+          <ul class="sfc-list">
+            <li>Laptop &amp; desktop peripherals (keyboards, mice, monitors)</li>
+            <li>Mobile phone cases, screen protectors &amp; chargers</li>
+            <li>Cables, adapters, hubs &amp; USB accessories</li>
+            <li>Power banks, headsets &amp; speakers</li>
+            <li>Printer ink, toner cartridges &amp; stationery</li>
+          </ul>
+          <div class="sfc-bottom"><span class="sfc-note">✔ Walk-in &amp; order available</span><button class="btn-outline" style="padding:.5rem 1.2rem;font-size:.82rem" onclick="navTo('contact')">Enquire</button></div>
+        </div>
+
+        <!-- Repairs -->
+        <div class="svc-full-card">
+          <div class="sfc-top"><div class="sfc-icon">🔧</div><div class="sfc-tag gold">Fast Turnaround</div></div>
+          <div class="sfc-title">Repairs, Upgrades &amp; Maintenance</div>
+          <p class="sfc-desc">Our certified technicians diagnose and repair hardware and software issues on computers and phones. We get it right the first time — and we back our work with a service warranty.</p>
+          <ul class="sfc-list">
+            <li>Screen &amp; battery replacement (phones &amp; laptops)</li>
+            <li>RAM, SSD &amp; storage upgrades</li>
+            <li>Operating system reinstalls &amp; data recovery</li>
+            <li>Virus, malware &amp; spyware removal</li>
+            <li>Motherboard &amp; hardware diagnostics</li>
+            <li>Preventive maintenance service plans</li>
+          </ul>
+          <div class="sfc-bottom"><span class="sfc-note">✔ Most repairs within 24 hours</span><button class="btn-outline" style="padding:.5rem 1.2rem;font-size:.82rem" onclick="navTo('contact')">Book Repair</button></div>
+        </div>
+
+        <!-- Electricals -->
+        <div class="svc-full-card">
+          <div class="sfc-top"><div class="sfc-icon">⚡</div><div class="sfc-tag">On-site</div></div>
+          <div class="sfc-title">Electrical Services</div>
+          <p class="sfc-desc">Safe, professional electrical work for homes and businesses. Our qualified electricians handle installations, fault finding, and power protection to keep your operations running smoothly.</p>
+          <ul class="sfc-list">
+            <li>Electrical fault finding &amp; diagnostics</li>
+            <li>New wiring, socket &amp; switch installations</li>
+            <li>UPS (Uninterruptible Power Supply) installation</li>
+            <li>Surge protection &amp; power conditioning</li>
+            <li>Office &amp; commercial electrical fitouts</li>
+          </ul>
+          <div class="sfc-bottom"><span class="sfc-note">✔ Certified &amp; compliant</span><button class="btn-outline" style="padding:.5rem 1.2rem;font-size:.82rem" onclick="navTo('contact')">Get Quote</button></div>
+        </div>
+
+        <!-- Networks -->
+        <div class="svc-full-card">
+          <div class="sfc-top"><div class="sfc-icon">📡</div><div class="sfc-tag">Business</div></div>
+          <div class="sfc-title">Network Installation &amp; Maintenance</div>
+          <p class="sfc-desc">We design, install, and maintain reliable network infrastructure for businesses of all sizes — from a simple home office to a full multi-branch enterprise setup.</p>
+          <ul class="sfc-list">
+            <li>LAN / WAN infrastructure design &amp; deployment</li>
+            <li>Wi-Fi access point installation &amp; configuration</li>
+            <li>Structured cabling &amp; patch panel setup</li>
+            <li>Network troubleshooting &amp; optimisation</li>
+            <li>CCTV &amp; IP camera network integration</li>
+            <li>Remote network monitoring &amp; support plans</li>
+          </ul>
+          <div class="sfc-bottom"><span class="sfc-note">✔ Site survey available</span><button class="btn-outline" style="padding:.5rem 1.2rem;font-size:.82rem" onclick="navTo('contact')">Site Survey</button></div>
+        </div>
+
+        <!-- Cyber Security -->
+        <div class="svc-full-card">
+          <div class="sfc-top"><div class="sfc-icon">🛡️</div><div class="sfc-tag gold">High Priority</div></div>
+          <div class="sfc-title">Cyber Security Services</div>
+          <p class="sfc-desc">In a world of growing digital threats, your organisation's security is non-negotiable. We implement layered security frameworks tailored to your risk profile and budget.</p>
+          <ul class="sfc-list">
+            <li>Vulnerability assessments &amp; penetration testing</li>
+            <li>Firewall configuration &amp; active monitoring</li>
+            <li>Endpoint protection &amp; antivirus deployment</li>
+            <li>Automated cloud backup &amp; disaster recovery</li>
+            <li>Security awareness training for staff</li>
+            <li>Compliance guidance (POPIA, GDPR basics)</li>
+          </ul>
+          <div class="sfc-bottom"><span class="sfc-note">✔ Free initial risk consultation</span><button class="btn-outline" style="padding:.5rem 1.2rem;font-size:.82rem" onclick="navTo('contact')">Book Consult</button></div>
+        </div>
+
+        <!-- Web Development -->
+        <div class="svc-full-card">
+          <div class="sfc-top"><div class="sfc-icon">🌐</div><div class="sfc-tag">Digital</div></div>
+          <div class="sfc-title">Web Development</div>
+          <p class="sfc-desc">Your website is your digital storefront. We build fast, responsive, and visually compelling websites and web applications that work hard for your brand around the clock.</p>
+          <ul class="sfc-list">
+            <li>Business, portfolio &amp; corporate websites</li>
+            <li>E-commerce &amp; online store development</li>
+            <li>Custom web application development</li>
+            <li>Domain registration &amp; web hosting setup</li>
+            <li>SEO optimisation &amp; Google My Business setup</li>
+            <li>Website maintenance &amp; update plans</li>
+          </ul>
+          <div class="sfc-bottom"><span class="sfc-note">✔ Design included</span><button class="btn-outline" style="padding:.5rem 1.2rem;font-size:.82rem" onclick="navTo('contact')">Start Project</button></div>
+        </div>
+
+      </div><!-- /svc-full-grid -->
+    </div><!-- /container -->
+
+    <!-- Process -->
+    <div class="process-section">
+      <div class="container">
+        <div class="section-head">
+          <div class="chip">How It Works</div>
+          <h2 class="section-title">Simple. <span>Seamless.</span> Sorted.</h2>
+          <p class="section-sub">Four easy steps to getting your tech challenges resolved by our expert team.</p>
+        </div>
+        <div class="process-timeline">
+          <div class="pt-step"><div class="pt-circle">01</div><div class="pt-title">Contact Us</div><div class="pt-desc">Call, WhatsApp, email or walk in to describe your issue or project requirements.</div></div>
+          <div class="pt-step"><div class="pt-circle">02</div><div class="pt-title">Free Diagnosis</div><div class="pt-desc">We assess the problem thoroughly and give you a clear, upfront quote — no hidden costs.</div></div>
+          <div class="pt-step"><div class="pt-circle">03</div><div class="pt-title">We Get to Work</div><div class="pt-desc">Our certified team executes efficiently with regular progress updates keeping you in the loop.</div></div>
+          <div class="pt-step"><div class="pt-circle">04</div><div class="pt-title">Delivered &amp; Supported</div><div class="pt-desc">We deliver the result with a warranty and provide ongoing support — because the job doesn't end at handover.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /page-services -->
+
+
+<!-- ════════════════════════════════════════════
+     PAGE: ABOUT
+════════════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="about-page">
+    <div class="container">
+      <div class="about-hero">
+        <div class="about-hero-text">
+          <div class="chip">Our Story</div>
+          <h1>Born From Passion.<br/><span>Built For People.</span></h1>
+          <p>Amake Solutions was founded on a simple belief: quality technology services should be accessible, transparent, and delivered with care. We started as a startup with big ambitions and a community-first mindset.</p>
+          <p>Today we offer a growing suite of seven core services — from device repairs and network installations to cybersecurity and web development — all delivered by a passionate, certified team committed to excellence.</p>
+          <p>We don't just fix things. We build lasting relationships, empower businesses, and help individuals get the most out of technology.</p>
+          <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
+            <button class="btn-primary" onclick="navTo('services')">Our Services</button>
+            <button class="btn-outline" onclick="navTo('contact')">Work With Us</button>
+          </div>
+        </div>
+        <div class="about-visual">
+          <div class="av-row">
+            <div class="av-card"><div class="av-icon">🚀</div><div class="av-h">Startup Energy</div><div class="av-p">Fresh ideas, agile delivery, and the hunger to go above and beyond.</div></div>
+            <div class="av-card"><div class="av-icon">🏆</div><div class="av-h">Certified Team</div><div class="av-p">Industry certifications across hardware, networks, and security.</div></div>
+          </div>
+          <div class="av-row">
+            <div class="av-card"><div class="av-icon">🤝</div><div class="av-h">Community First</div><div class="av-p">Proudly local, serving our neighbourhood with genuine care.</div></div>
+            <div class="av-card"><div class="av-icon">🔒</div><div class="av-h">Trusted &amp; Private</div><div class="av-p">Your data and devices handled with full confidentiality.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-ticker">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-val">500+</div><div class="stat-lbl">Devices Repaired</div></div>
+        <div class="stat-box"><div class="stat-val">7</div><div class="stat-lbl">Core Service Areas</div></div>
+        <div class="stat-box"><div class="stat-val">24h</div><div class="stat-lbl">Average Turnaround</div></div>
+        <div class="stat-box"><div class="stat-val">98%</div><div class="stat-lbl">Client Satisfaction</div></div>
+        <div class="stat-box"><div class="stat-val">100%</div><div class="stat-lbl">Local &amp; Trusted</div></div>
+      </div>
+    </div>
+
+    <!-- VALUES -->
+    <div class="values-section" style="padding-top:4rem">
+      <div class="section-head">
+        <div class="chip">Our Values</div>
+        <h2 class="section-title">What We <span>Stand For</span></h2>
+        <p class="section-sub">Our values aren't a wall poster — they're the principles that guide every interaction, every repair, and every project we take on.</p>
+      </div>
+      <div class="values-grid">
+        <div class="val-card"><div class="val-emoji">⭐</div><div class="val-title">Excellence</div><div class="val-desc">We refuse mediocrity. Every job, regardless of size, receives our full expertise and attention to detail.</div></div>
+        <div class="val-card"><div class="val-emoji">🤝</div><div class="val-title">Integrity</div><div class="val-desc">Transparent pricing, honest diagnosis, no upselling. We tell you what you need, not what earns us more.</div></div>
+        <div class="val-card"><div class="val-emoji">💡</div><div class="val-title">Innovation</div><div class="val-desc">We stay ahead of the curve — always learning, always updating our skills to serve you with the latest solutions.</div></div>
+        <div class="val-card"><div class="val-emoji">🌍</div><div class="val-title">Community</div><div class="val-desc">We're part of this community. We invest in local talent, support local businesses, and give back where we can.</div></div>
+        <div class="val-card"><div class="val-emoji">🔒</div><div class="val-title">Privacy &amp; Trust</div><div class="val-desc">Your data, your devices, your confidentiality. We treat every client's information with absolute discretion.</div></div>
+        <div class="val-card"><div class="val-emoji">📞</div><div class="val-title">Accountability</div><div class="val-desc">We stand behind our work. Every repair, installation, and project comes with a service guarantee.</div></div>
+      </div>
+    </div>
+
+    <!-- CULTURE BAND -->
+    <div class="culture-band">
+      <div class="cb-text">
+        <h2>Our Corporate <span>Culture</span></h2>
+        <p style="color:var(--c-muted);font-size:.93rem;line-height:1.72;font-weight:300;margin-bottom:1.5rem">At Amake Solutions, we cultivate a workplace where expertise meets enthusiasm. Our team members are not just employees — they are co-owners of a vision to make quality technology accessible to all.</p>
+        <p style="color:var(--c-muted);font-size:.93rem;line-height:1.72;font-weight:300">We invest in our people through continuous training, encourage creative problem-solving, and celebrate every win — big or small.</p>
+      </div>
+      <ul class="cb-list">
+        <li><span class="cb-check">✓</span>Continuous learning &amp; professional development for all staff</li>
+        <li><span class="cb-check">✓</span>Collaborative, flat-hierarchy team structure</li>
+        <li><span class="cb-check">✓</span>Performance recognition and growth pathways</li>
+        <li><span class="cb-check">✓</span>Community outreach and skills development programmes</li>
+        <li><span class="cb-check">✓</span>Clean, inclusive, and respectful work environment</li>
+        <li><span class="cb-check">✓</span>Client-first mindset embedded in every role</li>
+      </ul>
+    </div>
+
+  </div>
+</div><!-- /page-about -->
+
+
+<!-- ════════════════════════════════════════════
+     PAGE: CYBERCAFE
+════════════════════════════════════════════ -->
+<div class="page" id="page-cafe">
+  <div class="cafe-page">
+    <div class="container">
+      <div class="cafe-hero">
+        <div class="chip" style="margin-bottom:1rem">Cybercafé Services</div>
+        <h1>Walk In. Get It <span>Done.</span></h1>
+        <p>Our neighbourhood cybercafé hub gives you access to professional document services, fast internet, and a productive workspace — all at affordable prices. No appointment needed.</p>
+      </div>
+
+      <div class="cafe-services-grid">
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">🖨️</div>
+          <div class="cafe-svc-name">Printing</div>
+          <div class="cafe-svc-info">Black &amp; white and full-colour printing. Documents, flyers, CVs, assignments &amp; more.</div>
+          <div class="cafe-svc-price">From R2 / page</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">📄</div>
+          <div class="cafe-svc-name">Photocopying</div>
+          <div class="cafe-svc-info">High-quality copies — single pages or bulk orders handled quickly and accurately.</div>
+          <div class="cafe-svc-price">From R2 / copy</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">🔍</div>
+          <div class="cafe-svc-name">Scanning</div>
+          <div class="cafe-svc-info">Scan documents to PDF, email, or USB stick. High-resolution available.</div>
+          <div class="cafe-svc-price">From R5 / scan</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">📝</div>
+          <div class="cafe-svc-name">Typing Services</div>
+          <div class="cafe-svc-info">Professional typing of CVs, cover letters, affidavits, assignments &amp; forms.</div>
+          <div class="cafe-svc-price">From R25 / page</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">📦</div>
+          <div class="cafe-svc-name">Laminating</div>
+          <div class="cafe-svc-info">Protect your important documents, ID copies, certificates &amp; cards.</div>
+          <div class="cafe-svc-price">From R10 / item</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">✂️</div>
+          <div class="cafe-svc-name">Binding &amp; Finishing</div>
+          <div class="cafe-svc-info">Spiral binding, comb binding, stapling &amp; hole punching for documents &amp; reports.</div>
+          <div class="cafe-svc-price">From R15</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">💳</div>
+          <div class="cafe-svc-name">E-Services</div>
+          <div class="cafe-svc-info">Online government forms, SASSA, UIF, online applications &amp; submissions assisted.</div>
+          <div class="cafe-svc-price">From R20</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">💻</div>
+          <div class="cafe-svc-name">Internet Access</div>
+          <div class="cafe-svc-info">High-speed browsing stations — video calls, job applications, research &amp; more.</div>
+          <div class="cafe-svc-price">From R10 / 30 min</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">🎓</div>
+          <div class="cafe-svc-name">Student Workspace</div>
+          <div class="cafe-svc-info">Quiet, comfortable workstations with fast Wi-Fi — ideal for studying &amp; assignments.</div>
+          <div class="cafe-svc-price">From R20 / hr</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">📸</div>
+          <div class="cafe-svc-name">ID Photo Printing</div>
+          <div class="cafe-svc-info">Passport, visa &amp; ID-size photo printing on high-quality photo paper.</div>
+          <div class="cafe-svc-price">From R20 / set</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">📧</div>
+          <div class="cafe-svc-name">Email &amp; Admin</div>
+          <div class="cafe-svc-info">Email assistance, CV creation, document editing &amp; basic admin support.</div>
+          <div class="cafe-svc-price">From R25</div>
+        </div>
+        <div class="cafe-svc">
+          <div class="cafe-svc-emoji">🗂️</div>
+          <div class="cafe-svc-name">Bulk Orders</div>
+          <div class="cafe-svc-info">Large print runs, business cards, banners &amp; marketing materials. Special pricing available.</div>
+          <div class="cafe-svc-price">Custom Quote</div>
+        </div>
+      </div>
+
+      <!-- Ambiance -->
+      <div class="cafe-ambiance">
+        <div class="ca-text">
+          <div class="chip">Your Neighbourhood Hub</div>
+          <h2>More Than a <span>Café</span></h2>
+          <p>Amake Cybercafé is a warm, productive space for students, job seekers, entrepreneurs, and anyone who needs professional document services. We make it easy, affordable, and stress-free.</p>
+          <div class="ca-features">
+            <div class="ca-feat"><div class="ca-feat-icon">⚡</div>Fast Wi-Fi</div>
+            <div class="ca-feat"><div class="ca-feat-icon">❄️</div>Air-conditioned</div>
+            <div class="ca-feat"><div class="ca-feat-icon">🔌</div>Power points</div>
+            <div class="ca-feat"><div class="ca-feat-icon">🖨️</div>Multi-function printers</div>
+            <div class="ca-feat"><div class="ca-feat-icon">♿</div>Accessible</div>
+            <div class="ca-feat"><div class="ca-feat-icon">🔒</div>Secure &amp; private</div>
+          </div>
+        </div>
+        <div class="ca-hours">
+          <h3>📅 Operating Hours</h3>
+          <div class="ca-hour-row"><span class="day">Monday</span><span class="time">07:30 – 18:00</span></div>
+          <div class="ca-hour-row"><span class="day">Tuesday</span><span class="time">07:30 – 18:00</span></div>
+          <div class="ca-hour-row"><span class="day">Wednesday</span><span class="time">07:30 – 18:00</span></div>
+          <div class="ca-hour-row"><span class="day">Thursday</span><span class="time">07:30 – 18:00</span></div>
+          <div class="ca-hour-row"><span class="day">Friday</span><span class="time">07:30 – 18:00</span></div>
+          <div class="ca-hour-row"><span class="day">Saturday</span><span class="time">08:00 – 15:00</span></div>
+          <div class="ca-hour-row"><span class="day">Sunday</span><span class="time closed">Closed</span></div>
+          <div style="margin-top:1.2rem;padding:.8rem;background:rgba(0,212,255,.07);border:1px solid var(--c-border);border-radius:var(--r-sm);font-size:.82rem;color:var(--c-muted)">
+            💡 Walk-ins welcome. <span style="color:var(--c-cyan)">No appointment needed</span> for most services.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- /page-cafe -->
+
+
+<!-- ════════════════════════════════════════════
+     PAGE: CONTACT
+════════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="contact-page">
+    <div class="container">
+      <div class="contact-hero-text">
+        <div class="chip" style="margin-bottom:.8rem">Get In Touch</div>
+        <h1>Let's Solve Your <span>Tech Challenges</span></h1>
+        <p>Whether it's a quick question or a large project — our team is ready to help. Reach out and we'll get back to you fast.</p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-info-col">
+          <h3>Contact Details</h3>
+          <p>Have a question, need a quote, or want to book a service? Here's how to reach us — or fill in the form and we'll contact you.</p>
+
+          <div class="cinfo">
+            <div class="cinfo-icon">📍</div>
+            <div><div class="cinfo-label">Location</div><div class="cinfo-val">South Africa — Local &amp; Remote Services Available</div></div>
+          </div>
+          <div class="cinfo">
+            <div class="cinfo-icon">📞</div>
+            <div><div class="cinfo-label">Phone / WhatsApp</div><div class="cinfo-val">+27 000 000 0000</div></div>
+          </div>
+          <div class="cinfo">
+            <div class="cinfo-icon">✉️</div>
+            <div><div class="cinfo-label">Email</div><div class="cinfo-val">info@amakesolutions.co.za</div></div>
+          </div>
+          <div class="cinfo">
+            <div class="cinfo-icon">🕐</div>
+            <div><div class="cinfo-label">Business Hours</div><div class="cinfo-val">Mon–Fri: 07:30–18:00 | Sat: 08:00–15:00</div></div>
+          </div>
+
+          <div class="contact-socials">
+            <a href="#" class="cs-btn" title="Facebook">f</a>
+            <a href="#" class="cs-btn" title="Instagram">📷</a>
+            <a href="#" class="cs-btn" title="WhatsApp">💬</a>
+            <a href="#" class="cs-btn" title="LinkedIn">in</a>
+            <a href="#" class="cs-btn" title="Twitter/X">𝕏</a>
+          </div>
+
+          <div style="margin-top:2rem;background:linear-gradient(135deg,rgba(30,58,95,.4),rgba(0,212,255,.06));border:1px solid var(--c-border);border-radius:var(--r-lg);padding:1.5rem">
+            <div style="font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;font-size:1.1rem;margin-bottom:.6rem;color:var(--c-gold)">⭐ Free Consultations</div>
+            <p style="font-size:.87rem;color:var(--c-muted);line-height:1.65">We offer <strong style="color:var(--c-white)">free initial consultations</strong> on all major projects — network installations, cybersecurity, and web development. No obligation.</p>
+          </div>
+        </div>
+
+        <div class="contact-form-card">
+  <div class="cf-title">Send Us a Message</div>
+  <form action="https://formspree.io/f/mkopbnyl" method="POST">
+          <div class="cf-row">
+            <div class="cf-group"><label>First Name</label><input name="first_name"/></div>
+            <div class="cf-group"><label>Last Name</label><input name="last_name"/></div>
+          </div>
+          <div class="cf-group"><label>Email Address</label><input name="email"/></div>
+          <div class="cf-group"><label>Phone Number</label><input name="phone"/></div>
+          <div class="cf-group">
+            <label>Service Required</label>
+            <select>
+              <option value="">name="service"...</option>
+              <option>Computer / Phone Repair</option>
+              <option>Hardware Upgrade</option>
+              <option>Accessories Purchase</option>
+              <option>Electrical Services</option>
+              <option>Network Installation</option>
+              <option>Network Maintenance</option>
+              <option>Cyber Security Assessment</option>
+              <option>Web Development</option>
+              <option>Cybercafé Services</option>
+              <option>Other / General Enquiry</option>
+            </select>
+          </div>
+          <div class="cf-group"><label>Your Message</label><name="message" placeholder="Tell us about your project, issue or question — the more detail you provide, the better we can assist you."></textarea></div>
+          <button type="submit" class="cf-submit">SEND MESSAGE →</button>
+</form>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="map-section" style="padding:3rem 0">
+        <div class="map-box">
+          <div class="map-pin">📍</div>
+          <div class="map-text">AMAKE SOLUTIONS — SOUTH AFRICA</div>
+          <div style="font-size:.82rem;color:var(--c-muted);position:relative;z-index:1">Visit us in store or request an on-site call-out</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- /page-contact -->
+
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="fb-logo">
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <div class="nav-logo">AS</div>
+          <div class="nav-wordmark">Amake <span>Solutions</span></div>
+        </div>
+      </div>
+      <p class="fb-desc">Your all-in-one technology partner — repairs, networks, security, web development, and cybercafé services, all under one trusted roof.</p>
+      <div class="fb-badge">★ Trusted Local Tech Partner</div>
+    </div>
+    <div>
+      <div class="fc-head">Services</div>
+      <ul class="fc-links">
+        <li><button onclick="navTo('services')">Accessories</button></li>
+        <li><button onclick="navTo('services')">Repairs &amp; Upgrades</button></li>
+        <li><button onclick="navTo('services')">Electrical Services</button></li>
+        <li><button onclick="navTo('services')">Network Solutions</button></li>
+        <li><button onclick="navTo('services')">Cyber Security</button></li>
+        <li><button onclick="navTo('services')">Web Development</button></li>
+      </ul>
+    </div>
+    <div>
+      <div class="fc-head">Cybercafé</div>
+      <ul class="fc-links">
+        <li><button onclick="navTo('cafe')">Printing</button></li>
+        <li><button onclick="navTo('cafe')">Photocopying</button></li>
+        <li><button onclick="navTo('cafe')">Scanning</button></li>
+        <li><button onclick="navTo('cafe')">Typing Services</button></li>
+        <li><button onclick="navTo('cafe')">E-Services</button></li>
+        <li><button onclick="navTo('cafe')">Internet Access</button></li>
+      </ul>
+    </div>
+    <div>
+      <div class="fc-head">Company</div>
+      <ul class="fc-links">
+        <li><button onclick="navTo('home')">Home</button></li>
+        <li><button onclick="navTo('about')">About Us</button></li>
+        <li><button onclick="navTo('about')">Our Values</button></li>
+        <li><button onclick="navTo('contact')">Contact Us</button></li>
+        <li><button onclick="navTo('contact')">Get a Free Quote</button></li>
+      </ul>
+      <div style="margin-top:1.5rem">
+        <div style="font-size:.78rem;color:var(--c-muted);margin-bottom:.5rem">📞 +27 000 000 0000</div>
+        <div style="font-size:.78rem;color:var(--c-muted)">✉️ info@amakesolutions.co.za</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 <span>Amake Solutions</span>. All rights reserved.</div>
+    <div>Designed with <span class="footer-accent">♥</span> for our community</div>
+    <div>Privacy Policy · Terms of Service</div>
+  </div>
+</footer>
+
+
+<script>
+/* ═══ PAGE NAVIGATION ═══ */
+function navTo(page) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Show target page
+  const target = document.getElementById('page-' + page);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  // Update nav links
+  document.querySelectorAll('.nav-link, .mob-link').forEach(l => {
+    l.classList.remove('active');
+    if (l.dataset.page === page) l.classList.add('active');
+  });
+  // Close mobile menu
+  closeMobile();
+}
+
+/* ═══ MOBILE MENU ═══ */
+let mobileOpen = false;
+function toggleMobile() {
+  mobileOpen = !mobileOpen;
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('open', mobileOpen);
+}
+function closeMobile() {
+  mobileOpen = false;
+  document.getElementById('mobile-menu').classList.remove('open');
+}
+
+/* ═══ NAVBAR SCROLL ═══ */
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  nav.style.background = window.scrollY > 60
+    ? 'rgba(7,18,32,.98)'
+    : 'rgba(7,18,32,.88)';
+});
+
+
+/* ═══ INTERSECTION ANIMATIONS ═══ */
+const animObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+function initAnimations() {
+  document.querySelectorAll('.svc-card, .svc-full-card, .val-card, .cafe-svc, .testi-card, .hp-card, .pt-step').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = `opacity .5s ease ${i * 0.07}s, transform .5s ease ${i * 0.07}s, border-color .25s, background .25s`;
+    animObserver.observe(el);
+  });
+}
+
+// Re-init on page change
+const origNavTo = navTo;
+window.navTo = function(page) {
+  origNavTo(page);
+  setTimeout(initAnimations, 100);
+};
+
+// Init on load
+window.addEventListener('load', initAnimations);
+</script>
+
+</body>
+</html>
